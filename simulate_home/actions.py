@@ -99,7 +99,7 @@ def go_back(d: u2.Device, prev_state=None, delay_min=0.2, delay_max=0.5):
     if steps <= 0:
         return False
 
-    for i in range(steps):
+    for _ in range(steps):
         d.press("back")
         delay = random.uniform(delay_min, delay_max)
         t.sleep(delay)
