@@ -1,70 +1,123 @@
-# 📱 Instageam 自動化腳本
+# Matrix Automation CLI
 
-一個用 Python 撰寫的 Instagram 自動化工具，可透過 ADB 操作多台 Android 裝置，模擬滑動、點讚、留言等行為，支援裝置掃描與批次模擬執行
+Matrix Automation CLI is a command-line tool for simulating user activity on Instagram and Threads apps. It supports multi-device automation via ADB and is ideal for behavior testing, account warming, content farming, and user flow simulation.
 
-## 🚀 功能特色
+## Features
 
-- 🔍 掃描目前透過 ADB 連接的 Android 裝置，並輸出為 CSV
-- 🤖 載入裝置清單後，平行執行模擬操作流程
-- 🧠 支援狀態機與轉移機率配置，擴充彈性強
-- ✅ 模組化設計，方便擴展與測試
+* 🔍 Scan connected Android devices and export device info
+* 🤖 Simulate Instagram home feed browsing
+* 🧵 Simulate Threads home feed browsing
 
-## 🧩 專案結構
+---
+
+## Installation
+
+We recommend running this project inside a virtual environment.
 
 ```
-ins_automation/
-├── cli.py                        # CLI 入口點，定義 scan/simulate 指令
-├── ins_automation/
-│   ├── actions.py               # 各種操作：滑動、點讚、進入留言等
-│   ├── devices.py               # 裝置連接與 CSV 匯入/輸出
-│   ├── runner.py                # 多裝置模擬控制器
-│   ├── states.py                # 定義狀態與轉移矩陣
-│   ├── walk.py                  # 實作帶有轉移機率的隨機狀態機
-```
-
-## 🛠️ 安裝方式
-
-1. 安裝 Python 3.8+
-2. 安裝依賴：
-
-```bash
+git clone https://github.com/your-org/matrix-automation-cli.git
+cd matrix-automation-cli
 pip install -r requirements.txt
 ```
 
-> 📦 若未提供 requirements.txt，請確保手動安裝 `uiautomator2`
+---
 
-3. 確認已安裝 ADB 並加入環境變數：
+## Usage
 
-```bash
-adb devices
+Run the CLI with the following format:
+
+```
+python cli.py <command> [options]
 ```
 
-## 🖥️ 使用方式
+---
 
-### 🔍 掃描裝置並輸出為 CSV
+## Commands and Options
 
-```bash
-python cli.py scan --path /path/to/adb --output devices.csv
+### 1. Device Management
+
+Scan connected Android devices and export their details to a CSV file.
+
+```
+python cli.py device --mode scan --path <ADB_PATH> --file <OUTPUT_CSV>
 ```
 
-- `--path`：**指定 ADB 可執行檔的路徑，例如 `/opt/homebrew/bin/adb` 或 `C:\platform-tools\adb.exe`
-- `--output`：輸出裝置資訊的 CSV 檔名，預設為 `devices.csv`
+Options:
 
-✅ 範例（使用 macOS + brew 安裝的 adb）：
+* `--mode`: Mode of operation (currently only `scan`)
+* `--path`: Path to ADB binary (e.g., `/usr/bin/adb`)
+* `--file`: Output CSV filename
 
-```bash
-python cli.py scan --path /opt/homebrew/bin/adb --output devices.csv
+---
+
+### 2. Instagram Simulation
+
+Simulate user behavior in the Instagram app (currently supports home feed).
+
+```
+python cli.py instagram --mode home --device <DEVICE_CSV> --step 100
 ```
 
-### 🤖 執行首頁養號操作
+Options:
 
-```bash
-python cli.py simhome --csv devices.csv --steps 100
+* `--mode`: Simulation mode: `home` or `reels`
+* `--device`: Path to device CSV file
+* `--step`: Number of simulation steps (default: 100)
+
+---
+
+### 3. Threads Simulation
+
+Simulate user behavior in the Threads app (currently supports home feed).
+
+```
+python cli.py threads --mode home --device <DEVICE_CSV> --step 100
 ```
 
-將針對 CSV 中列出的每台裝置，啟動一段預設的模擬互動流程。
+Options:
 
-## 📝 注意事項
+* `--mode`: Simulation mode: `home` or `reels`
+* `--device`: Path to device CSV file
+* `--step`: Number of simulation steps (default: 100)
 
-- 須使用 Android 實體裝置並開啟「USB 偵錯」
-- 若模擬過於頻繁，可能導致帳號風險，請斟酌使用
+---
+
+## Example Workflow
+
+1. Scan devices and save info:
+
+```
+python cli.py device --mode scan --path /usr/local/bin/adb --file devices.csv
+```
+
+2. Simulate Instagram home feed:
+
+```
+python cli.py instagram --mode home --device devices.csv --step 200
+```
+
+3. Simulate Threads home feed:
+
+```
+python cli.py threads --mode home --device devices.csv --step 150
+```
+
+---
+
+## Device CSV Format
+
+The scanned output is saved as a CSV file in the following format:
+
+```
+serial,ip
+RTZ16888,192.0.0.168
+...
+```
+
+---
+
+## Notes
+
+* Make sure your devices are connected via USB or ADB over network, and USB debugging is enabled.
+* ADB (Android Debug Bridge) must be installed.
+* Simulation behavior is based on an internal Markov chain model. Please use responsibly and do not violate platform policies.
