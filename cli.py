@@ -13,7 +13,8 @@ def main():
     scan_parser = subparsers.add_parser("device", help="Scan devices")
     scan_parser.add_argument("--mode", type=str, help="Scan mode")
     scan_parser.add_argument("--path", type=str, help="ADB path")
-    scan_parser.add_argument("--file", type=str, help="Output file name")
+    scan_parser.add_argument("--file", type=str, help="Output file name in scan mode or root path for root folder in init mode")
+    scan_parser.add_argument("--folders", type=str, help="Create device folders")
 
     insta_parser = subparsers.add_parser("instagram", help="Run Instagram simulation")
     insta_parser.add_argument("--mode", type=str, help="Automation mode")
@@ -31,8 +32,12 @@ def main():
         if args.mode == "scan":
             print("scanning devices", flush=True)
             device = ADBDeviceManager(args.path)
-            device_info = device.get_device_info_list()
-            device.export_to_csv(device_info_list=device_info,filename=args.file)
+            device.export_to_csv(filename=args.file)
+
+        if args.mode == "init":
+            print("creating folders for devices", flush=True)
+            device = ADBDeviceManager(args.path)
+            device.create_device_folders(root_path=args.folders)
     
     elif args.command == "instagram":
         if args.mode == "home":

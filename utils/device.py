@@ -1,6 +1,7 @@
 import subprocess
 import csv
 import uiautomator2 as u2
+import os
 from typing import Optional, List, Dict
 
 class ADBDeviceManager:
@@ -80,18 +81,63 @@ class ADBDeviceManager:
 
         return info_list
 
-    def export_to_csv(self, device_info_list: List[Dict[str, str]], filename: str = "scanned_devices.csv") -> None:
+    def export_to_csv(self, filename: str = "scanned_devices.csv") -> None:
         """
         Export the device information to a CSV file.
 
         :param device_info_list: A list of device info dictionaries.
         :param filename: The name of the output CSV file.
         """
+
+        device_info_list = self.get_device_info_list()
+
         with open(filename, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=["serial", "ip"])
             writer.writeheader()
             writer.writerows(device_info_list)
         print(f"Device info exported to: {filename}", flush=True)
+
+    def create_device_folders(self, root_path: str) -> None:
+        """
+        Create a root folder and subfolders for each device based on their IP addresses.
+
+        :param root_path: The root directory path where device folders will be created.
+        """
+        # 1. 掃描所有連接的裝置
+        device_info_list = self.get_device_info_list()
+        
+        if not device_info_list:
+            print("沒有找到連接的 ADB 裝置", flush=True)
+            return
+        
+        print(f"\n找到 {len(device_info_list)} 個裝置:", flush=True)
+        for info in device_info_list:
+            print(f"  - Serial: {info['serial']}, IP: {info['ip']}", flush=True)
+        
+        # 3. 創建 root 資料夾
+        if not os.path.exists(root_path):
+            os.makedirs(root_path)
+            print(f"\n已創建 root 資料夾: {root_path}", flush=True)
+        else:
+            print(f"\nroot 資料夾已存在: {root_path}", flush=True)
+        
+        # 4. 為每個裝置創建以 IP 命名的資料夾
+        print("\n開始為每個裝置創建資料夾:", flush=True)
+        for info in device_info_list:
+            ip = info['ip']
+            serial = info['serial']
+            
+            # 處理 N/A 的情況，使用 serial 作為資料夾名稱
+            folder_name = ip if ip != "N/A" else f"unknown_{serial}"
+            device_folder = os.path.join(root_path, folder_name)
+            
+            if not os.path.exists(device_folder):
+                os.makedirs(device_folder)
+                print(f"  ✓ 已創建資料夾: {device_folder}", flush=True)
+            else:
+                print(f"  - 資料夾已存在: {device_folder}", flush=True)
+        
+        print("\n完成！", flush=True)
 
 def connect_devices_from_csv(file_path: str) -> Dict[str, u2.Device]:
     """
