@@ -1,7 +1,7 @@
 import concurrent.futures
 from threads.simulate_home_activity import markov_walk
 from threads.simulate_home_activity.states import states, transition_matrix
-from utils.device import connect_devices_from_csv
+from core.device import connect_devices_from_csv
 
 
 def run_on_device(serial: str, d, steps: int) -> None:

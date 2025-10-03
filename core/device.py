@@ -16,7 +16,7 @@ class ADBDeviceManager:
         :param adb_path: Path to the adb executable.
         """
         self.adb_path = adb_path
-
+        
     def _get_adb_device_list(self) -> List[str]:
         """
         Retrieve a list of connected ADB devices.

@@ -1,7 +1,7 @@
 import random
 import time as t
 from pathlib import Path
-from utils import swipe, click, parse_comment, post_comment, go_back
+from action import swipe, click, parse_comment, post_comment, go_back
 from typing import List, Dict
 from threads.simulate_home_activity.state_to_back_steps import state_to_back_steps
 

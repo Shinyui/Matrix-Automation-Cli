@@ -1,5 +1,6 @@
 import argparse
-from utils.device import ADBDeviceManager
+from core.device import ADBDeviceManager
+from core.ping import ping_adb
 from instagram.simulate_home_activity.concurrent_runner import run_all_devices as instagram_simulate_home
 from threads.simulate_home_activity.concurrent_runner import run_all_devices as threads_simulate_home
 
@@ -29,6 +30,10 @@ def main():
     args = parser.parse_args()
 
     if args.command == "device":
+        if args.mode == "ping":
+            result = ping_adb()
+            print(result, flush=True)
+
         if args.mode == "scan":
             print("scanning devices", flush=True)
             device = ADBDeviceManager(args.path)
